@@ -1,162 +1,52 @@
-#ifndef MAIN_H_
-#define MAIN_H_
+#ifndef INC_LCD_H_
+#define INC_LCD_H_
 
-#include <stdint.h>
+#include "user_core.h"
 
-/* Embedded FLASH memory registers */
-typedef struct
-{
-	volatile uint32_t ACR;
-	volatile uint32_t RESERVED1;
-	volatile uint32_t KEYR;
-	volatile uint32_t OPTKEYR;
-	volatile uint32_t SR;
-	volatile uint32_t CR;
-	volatile uint32_t RESERVED2[2];
-	volatile uint32_t OPTR;
-	volatile uint32_t PCROP1ASR;
-	volatile uint32_t PCROP1AER;
-	volatile uint32_t WRP1AR;
-	volatile uint32_t WRP1BR;
-	volatile uint32_t PCROP1BSR;
-	volatile uint32_t PCROP1BER;
-	volatile uint32_t RESERVED3[17];
-	volatile uint32_t SECR;
-} FLASH_TypeDef;
+//Lista de definicion de pines
+#define LCD_RS_PIN_HIGH       ( 0x1UL <<  9U )//	Set pin RS_LCD (PB9)
+#define LCD_RW_PIN_HIGH       ( 0x1UL << 10U )//	Set pin RW_LCD (PB10)
+#define LCD_EN_PIN_HIGH       ( 0x1UL << 11U )//	Set pin EN_LCD (PB11)
 
-/* Reset and Clock Control registers */
-typedef struct
-{
-	volatile uint32_t CR;
-	volatile uint32_t ICSCR;
-	volatile uint32_t CFGR;
-	volatile uint32_t RESERVED[3];
-	volatile uint32_t CIER;
-	volatile uint32_t CIFR;
-	volatile uint32_t CICR;
-	volatile uint32_t IOPRSTR;
-	volatile uint32_t AHBRSTR;
-	volatile uint32_t APBRSTR1;
-	volatile uint32_t APBRSTR2;
-	volatile uint32_t IOPENR;
-	volatile uint32_t AHBENR;
-    volatile uint32_t APBENR1;
-    volatile uint32_t APBENR2;
-} RCC_TypeDef;
+#define LCD_RS_PIN_LOW        ( 0x1UL << 25U )//	Reset pin RS_LCD (PB9)
+#define LCD_RW_PIN_LOW 	      ( 0x1UL << 26U )//	Reset pin RW_LCD (PB10)
+#define LCD_EN_PIN_LOW 	      ( 0x1UL << 27U )//	Reset pin EN_LCD (PB11)
 
-/* General Purpose I/O registers */
-typedef struct
-{
-	volatile uint32_t MODER;
-	volatile uint32_t OTYPER;
-	volatile uint32_t OSPEEDR;
-	volatile uint32_t PUPDR;
-	volatile uint32_t IDR;
-	volatile uint32_t ODR;
-	volatile uint32_t BSRR;
-	volatile uint32_t LCKR;
-    volatile uint32_t AFRL;
-	volatile uint32_t AFRH;
-    volatile uint32_t BRR;
-} GPIO_TypeDef;
+#define LCD_D4_PIN_HIGH       ( 0x1UL << 12U )//	Set pin DATA4_LCD (PB12)
+#define LCD_D5_PIN_HIGH       ( 0x1UL << 13U )//	Set pin DATA5_LCD (PB13)
+#define LCD_D6_PIN_HIGH       ( 0x1UL << 14U )//	Set pin DATA6_LCD (PB14)
+#define LCD_D7_PIN_HIGH       ( 0x1UL << 15U )//	Set pin DATA7_LCD (PB15)
 
-/* USART registers */
-typedef struct{
-	volatile uint32_t CR1;
-	volatile uint32_t CR2;
-	volatile uint32_t CR3;
-	volatile uint32_t BRR;
-	volatile uint32_t GTPR;
-	volatile uint32_t RTOR;
-	volatile uint32_t RQR;
-	volatile uint32_t ISR;
-	volatile uint32_t ICR;
-	volatile uint32_t RDR;
-	volatile uint32_t TDR;
-	volatile uint32_t PRESC;
-} USART_TypeDef;
+#define LCD_D4_PIN_LOW        ( 0x1UL << 28U )//	Reset pin DATA4_LCD (PB12)
+#define LCD_D5_PIN_LOW 	      ( 0x1UL << 29U )//	Reset pin DATA5_LCD (PB13)
+#define LCD_D6_PIN_LOW 	      ( 0x1UL << 30U )//	Reset pin DATA6_LCD (PB14)
+#define LCD_D7_PIN_LOW 	      ( 0x1UL << 31U )//	Reset pin DATA7_LCD (PB15)
 
-/* Analog-to-Digital Converter registers */
-typedef struct{
-	volatile uint32_t ISR;
-	volatile uint32_t IER;
-	volatile uint32_t CR;
-	volatile uint32_t CFGR1;
-	volatile uint32_t CFGR2;
-	volatile uint32_t SMPR;
-	volatile uint32_t RESERVED0[2];
-	volatile uint32_t AWD1TR;
-	volatile uint32_t AWD2TR;
-	volatile uint32_t CHSELR;
-	volatile uint32_t AWD3TR;
-	volatile uint32_t RESERVED1[4];
-	volatile uint32_t DR;
-	volatile uint32_t RESERVED2[23];
-	volatile uint32_t AWD2CR;
-	volatile uint32_t AWD3CR;
-	volatile uint32_t RESERVED3[3];
-	volatile uint32_t CALFACT;
-	volatile uint32_t RESERVED4[148];
-	volatile uint32_t CCR;
-} ADC_TypeDef;
+//Definimos los nombres de los comandos para el LCD
+#define LCD_Clear( )			LCD_Write_Cmd( 0x01U )//	Borra la pantalla
+#define LCD_Display_ON( )		LCD_Write_Cmd( 0x0EU )//	Pantalla LCD activa
+#define LCD_Display_OFF( )		LCD_Write_Cmd( 0x08U )//	Pantalla LCD inactiva
+#define LCD_Cursor_Home( )		LCD_Write_Cmd( 0x02U )//	Establecer el cursor a 'Home'
+#define LCD_Cursor_Blink( )		LCD_Write_Cmd( 0x0FU )//	Cursor intermitente
+#define LCD_Cursor_ON( )		LCD_Write_Cmd( 0x0EU )//	Cursor visible activo
+#define LCD_Cursor_OFF( )		LCD_Write_Cmd( 0x0CU )//	Cursor inactivo
+#define LCD_Cursor_Left( )		LCD_Write_Cmd( 0x10U )//	Movimiento hacia la izquierda del cursor
+#define LCD_Cursor_Right( )		LCD_Write_Cmd( 0x14U )//	Movimiento hacia la derecha del cursor
+#define LCD_Cursor_SLeft( )		LCD_Write_Cmd( 0x18U )//	Movimiento hacia la izquierda de la pantalla
+#define LCD_Cursor_SRight( )	LCD_Write_Cmd( 0x1CU )//	Movimiento hacia la derecha de la pantalla
 
-/* General Purpose Timers registers */
-typedef struct{
-	volatile uint32_t CR1;
-	volatile uint32_t CR2;
-	volatile uint32_t SMCR;
-	volatile uint32_t DIER;
-	volatile uint32_t SR;
-	volatile uint32_t EGR;
-	volatile uint32_t CCMR1;
-	volatile uint32_t CCMR2;
-	volatile uint32_t CCER;
-	volatile uint32_t CNT;
-	volatile uint32_t PSC;
-	volatile uint32_t ARR;
-	volatile uint32_t RESERVED1;
-	volatile uint32_t CCR1;
-	volatile uint32_t CCR2;
-	volatile uint32_t CCR3;
-	volatile uint32_t CCR4;
-	volatile uint32_t RESERVED2;
-	volatile uint32_t DCR;
-	volatile uint32_t DMAR;
-	volatile uint32_t RESERVED3[5];
-	volatile uint32_t AF1;
-	volatile uint32_t RESERVED4;
-	volatile uint32_t TISEL;
-} TIM_TypeDef;
+//Lista de funciones
+void LCD_Data_Out4(uint8_t val);
+void LCD_Write_Byte(uint8_t val);
+void LCD_Write_Cmd(uint8_t val);
+void LCD_Put_Char(uint8_t c);
+void LCD_Init(void);
+void LCD_Set_Cursor(uint8_t line, uint8_t column);
+void LCD_Put_Str(char * str);
+void LCD_Put_Num(int16_t num);
+char LCD_Busy(void);
+void LCD_Pulse_EN(void);
+void LCD_BarGraphic(int16_t value, int16_t size);
+void LCD_BarGraphicXY(int16_t pos_x, int16_t pos_y, int16_t value);
 
-#define NVIC_ISER0 (*((volatile uint32_t*)0xE000E100))
-
-#define ADC1_BASE   0x40012400UL
-#define RCC_BASE	0x40021000UL//		RCC base address
-#define FLASH_BASE	0x40022000UL//		FLASH base address
-#define GPIOA_BASE	0x50000000UL//		GPIO Port A base address
-#define GPIOB_BASE	0x50000400UL//		GPIO Port B base address
-#define USART1_BASE 0x40013800UL
-#define TIM3_BASE	0x40000400UL//	    TIM3 base address
-#define TIM14_BASE  0x40002000UL//      TIM14 base address
-#define TIM16_BASE	0x40014400UL// 	    TIM16 base address
-
-#define ADC1    (( ADC_TypeDef *)ADC1_BASE )
-#define RCC     (( RCC_TypeDef *)RCC_BASE )
-#define FLASH	(( FLASH_TypeDef *)FLASH_BASE )
-#define GPIOA	(( GPIO_TypeDef *)GPIOA_BASE )
-#define GPIOB   (( GPIO_TypeDef *)GPIOB_BASE )
-#define USART1  (( USART_TypeDef *)USART1_BASE )
-#define TIM3    (( TIM_TypeDef * )TIM3_BASE )
-#define TIM14   (( TIM_TypeDef *) TIM14_BASE )
-#define TIM16   (( TIM_TypeDef * )TIM16_BASE )
-
-
-extern int rpm;
-extern int vl;
-extern int gear;
-extern int acceleration;
-extern int button_state;
-extern volatile uint8_t paqueteListo;
-extern volatile uint32_t tim16_tick;
-
-#endif /* MAIN_H_ */
+#endif /* INC_LCD_H_ */
