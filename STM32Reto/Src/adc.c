@@ -1,8 +1,6 @@
-#include <stdint.h>
 #include "main.h"
+#include "adc.h"
 #include "user_core.h"
-
-uint8_t USER_ADC_Calibration(void);
 
 void USER_ADC_Init(void) {
     // Habilitar reloj del ADC y del puerto GPIOA
@@ -39,7 +37,7 @@ void USER_ADC_Init(void) {
     // Habilitar regulador interno
 
     ADC1->CR |= (1 << 28);       // ADVREGEN
-    SysTick_Delay(1);            // Delay > 10 us
+    SysTick_Delay(2);            // Delay > 10 us
 
     // Calibración
     while (!USER_ADC_Calibration());
@@ -62,10 +60,7 @@ uint8_t USER_ADC_Calibration(void) {
 }
 
 uint16_t USER_ADC_Read(void) {
-    ADC1->CR |= (1 << 2);               // ADSTART
-    while (!(ADC1->ISR & (1 << 2)));    // Esperar EOC
-    if (ADC1->ISR & (1 << 4)) {         // Check for overrun error
-        ADC1->ISR |= (1 << 4);          // Clear overrun flag
-    }
-    return (uint16_t)(ADC1->DR);        // Leer valor convertido
+    ADC1->CR |= (1 << 2);  // ADSTART
+    while (!(ADC1->ISR & (1 << 2)));  // Esperar EOC
+    return (uint16_t)(ADC1->DR);
 }
