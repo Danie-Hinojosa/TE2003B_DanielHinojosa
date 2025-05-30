@@ -3,19 +3,19 @@
 ## Implementación del Modelo del Tractor STM32 y Comunicación Inalámbrica RPI
 
 ### PIN OUT
- (STM)
-- GND    ->  Proto -
-- 3v3    ->  Proto +
+|(STM)|  Proto  |
+| GND | Proto - |
+| 3v3 | Proto + |
 
- (STM)      (Proto)
-- PA0    ->  Potenciometro
-- PA3    ->  Boton
+|(STM)|  Proto        |
+| PA0 | Potenciometro |
+| PA3 | Boton         |
 
- (STM)      (Proto)
-- PB4    ->  LED 1 (Motor 1)
-- PB5    ->  LED 2 (Motor 2)
-- PB6    ->  LED 3 (Motor 3)
-- PB7    ->  LED 4 (Motor 4)
+|(STM)|  Proto          |
+| PB4 | LED 1 (Motor 1) |
+| PB5 | LED 2 (Motor 2) |
+| PB6 | LED 3 (Motor 3) |
+| PB7 | LED 4 (Motor 4) |
 
  (STM)      (ESP32)
 - PA9    ->  D16(RX2) 
