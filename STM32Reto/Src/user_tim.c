@@ -198,9 +198,15 @@ void TIM16_IRQHandler(void) {
     }
 }
 
-void Update_PWM_From_Velocity(float input_vl) {
-    if (input_vl < 0.0f) input_vl = 0.0f;
-    if (input_vl > 200.0f) input_vl = 200.0f;
-    uint8_t duty = (uint8_t)((input_vl / 200.0f) * 100.0f);
-    USER_Set_PWM_Duty(duty);
+void Update_PWM_From_Velocity(int velocity_percent) {
+    if (velocity_percent < 0) velocity_percent = 0;
+    if (velocity_percent > 100) velocity_percent = 100;
+
+    uint16_t duty = (velocity_percent * (TIM3->ARR + 1)) / 100;
+
+    TIM3->CCR1 = duty;
+    TIM3->CCR2 = duty;
+    TIM3->CCR3 = duty;
+    TIM3->CCR4 = duty;
 }
+
