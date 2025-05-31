@@ -2,10 +2,11 @@
 #include "user_uart.h"
 
 #define RX_BUFFER_SIZE 64
+#define UART_RX_BUFFER_SIZE 64
 
 static void USART1_SendByte(uint8_t byte);
-char rx_buffer[RX_BUFFER_SIZE];
-uint8_t rx_index = 0;
+volatile char uart_rx_buffer[UART_RX_BUFFER_SIZE];
+volatile uint8_t uart_rx_index = 0;
 
 void USER_USART1_Init(void) {
     // Activar reloj de GPIOA y USART1
@@ -52,33 +53,15 @@ uint8_t USER_USART1_Receive_8bit(void) {
 }
 
 void USART1_IRQHandler(void) {
-    if (USART1->ISR & (1UL << 5U)) { // RXNE
-        uint8_t received = (uint8_t)(USART1->RDR & 0xFF);
+    if (USART1->ISR & USART_ISR_RXNE) {  // Dato recibido
+        char c = USART1->RDR & 0xFF;
 
-        if(received == 'I') {
-            rx_index = 0;
-            memset(rx_buffer, 0, RX_BUFFER_SIZE);
-            rx_buffer[rx_index++] = received;
-            return;
-        }
-
-        if (rx_buffer[0] == 'I') {
-            if(received == 'E') {
-                rx_buffer[rx_index] = '\0';
-
-                int rpm_i1, rpm_i2, vl_i1, vl_i2, gear_i;
-                if (sscanf(&rx_buffer[1], "%d,%d,%d,%d,%d,", &rpm_i1, &rpm_i2, &vl_i1, &vl_i2, &gear_i) == 5) {
-                    rpm = rpm_i1 + (rpm_i2 / 100.0f);
-                    vl = vl_i1 + (vl_i2 / 100.0f);
-                    gear = (float)gear_i;
-                    paqueteListo = 1;
-                }
-            } else if (rx_index < RX_BUFFER_SIZE - 1) {
-                rx_buffer[rx_index++] = received;
-            } else {
-                rx_index = 0;
-                memset(rx_buffer, 0, RX_BUFFER_SIZE);
-            }
+        if (c == '\n' || uart_rx_index >= UART_RX_BUFFER_SIZE - 1) {
+            uart_rx_buffer[uart_rx_index] = '\0';  // Finalizar string
+            parse_and_display((const char*)uart_rx_buffer);  // Procesar
+            uart_rx_index = 0;  // Reiniciar índice
+        } else {
+            uart_rx_buffer[uart_rx_index++] = c;
         }
     }
 }
@@ -91,4 +74,15 @@ int _write(int file, char *ptr, int len) {
 		USART1->TDR = *ptr++;
 	}
 	return len;
+}
+
+void parse_and_display(const char *line) {
+    int spd_entero = 0, rpm_entero = 0, gear_entero = 0;
+
+    if (sscanf(line, "SPD:%d RPM:%d G:%d", &spd_entero, &rpm_entero, &gear_entero) == 3) {
+        vl = spd_entero / 10;
+        rpm = rpm_entero;
+        gear = gear_entero;
+        paqueteListo = 1;
+    }
 }
