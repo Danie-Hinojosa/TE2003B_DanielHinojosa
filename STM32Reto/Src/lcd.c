@@ -95,7 +95,7 @@ void LCD_Init(void){
 	GPIOB->BSRR	 =	 LCD_D7_PIN_LOW;
 	LCD_Pulse_EN( );
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!	wait > 53us
-	delay_ms(1);
+	delay_us(60);
 
 	/* Special case of 'Function Set' */
 	GPIOB->BSRR	 =	 LCD_D4_PIN_HIGH;
@@ -103,7 +103,7 @@ void LCD_Init(void){
 	GPIOB->BSRR	 =	 LCD_D6_PIN_LOW;
 	GPIOB->BSRR	 =	 LCD_D7_PIN_LOW;
 	LCD_Pulse_EN( );
-	delay_ms(2);//while( LCD_Busy( ) );
+	while( LCD_Busy( ) );
 
 	/* Initial 'Function Set' to change 4-bit mode	*/
 	GPIOB->BSRR	 =	 LCD_D4_PIN_LOW;
@@ -111,7 +111,7 @@ void LCD_Init(void){
 	GPIOB->BSRR	 =	 LCD_D6_PIN_LOW;
 	GPIOB->BSRR	 =	 LCD_D7_PIN_LOW;
 	LCD_Pulse_EN( );
-	delay_ms(2);//while( LCD_Busy( ) );
+	while( LCD_Busy( ) );
 	/* 'Function Set' (I=1, N and F as required)	*/
 	LCD_Write_Cmd( 0x28U );
 	/* 'Display ON/OFF Control' (D=0, C=0, B=0)	*/
@@ -163,7 +163,7 @@ void LCD_Write_Byte(uint8_t val){
 	LCD_Pulse_EN( );
 	LCD_Out_Data4( val & 0x0FU );
 	LCD_Pulse_EN( );
-	delay_ms(2);//while( LCD_Busy( ) );
+	while( LCD_Busy( ) );
 }
 
 //Funcion que escribe un comando en el LCD
@@ -222,19 +222,19 @@ char LCD_Busy(void){
   * Configuracion de D7 as input floating
   */
 	GPIOB->PUPDR &= ~( 0x3UL << 30U );
-  GPIOB->MODER &= ~( 0x3UL << 30U );
+    GPIOB->MODER &= ~( 0x3UL << 30U );
 	GPIOB->BSRR	  =	 LCD_RS_PIN_LOW;
 	GPIOB->BSRR	  =	 LCD_RW_PIN_HIGH;
 	GPIOB->BSRR	  =	 LCD_EN_PIN_HIGH;
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! wait for 100us
-	delay_ms(1);
+	delay_us(100);
 	if(( GPIOB->IDR	& LCD_D7_PIN_HIGH )) {
-		GPIOB->BSRR	=  LCD_EN_PIN_LOW;
-		GPIOB->BSRR	=	 LCD_RW_PIN_LOW;
+		 GPIOB->BSRR	=  LCD_EN_PIN_LOW;
+		 GPIOB->BSRR	=  LCD_RW_PIN_LOW;
 /**
   * Configuracion de D7 as output push-pull
   */
-		GPIOB->PUPDR  &= ~( 0x3UL << 30U );
+	GPIOB->PUPDR  &= ~( 0x3UL << 30U );
   	GPIOB->OTYPER &= ~( 0x1UL << 15U );
   	GPIOB->MODER  &= ~( 0x2UL << 30U );
   	GPIOB->MODER  |=  ( 0x1UL << 30U );
@@ -245,7 +245,7 @@ char LCD_Busy(void){
 /**
   * Configuracion de D7 as output push-pull
   */
-		GPIOB->PUPDR  &= ~( 0x3UL << 30U );
+	GPIOB->PUPDR  &= ~( 0x3UL << 30U );
   	GPIOB->OTYPER &= ~( 0x1UL << 15U );
   	GPIOB->MODER  &= ~( 0x2UL << 30U );
   	GPIOB->MODER  |=  ( 0x1UL << 30U );
@@ -257,15 +257,15 @@ char LCD_Busy(void){
 void LCD_Pulse_EN(void){
 	GPIOB->BSRR	=	LCD_EN_PIN_LOW;//
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! wait for	10us
-	delay_ms(2);
+	delay_us(10);
 
 	GPIOB->BSRR	=	LCD_EN_PIN_HIGH;
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! wait for	10us
-	delay_ms(2);
+	delay_us(10);
 
 	GPIOB->BSRR	=	LCD_EN_PIN_LOW;
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! wait for	1ms
-	delay_ms(2);
+	delay_ms(1);
 }
 
 /*

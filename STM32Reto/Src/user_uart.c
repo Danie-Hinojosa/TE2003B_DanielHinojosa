@@ -1,7 +1,12 @@
 #include "main.h"
 #include "user_uart.h"
 
+#define RX_BUFFER_SIZE 64
+#define UART_RX_BUFFER_SIZE 64
+
 static void USART1_SendByte(uint8_t byte);
+volatile char uart_rx_buffer[UART_RX_BUFFER_SIZE];
+volatile uint8_t uart_rx_index = 0;
 
 void USER_USART1_Init(void) {
     // Activar reloj de GPIOA y USART1
@@ -24,29 +29,60 @@ void USER_USART1_Init(void) {
     USART1->BRR  = 417;  // Para 115200 baudios @ 48 MHz
 
     // Habilitar USART, transmisión y recepción
-    USART1->CR1 |= (1 << 0) | (1 << 2) | (1 << 3);
+    USART1->CR1 |= (1 << 0) | (1 << 2) | (1 << 3) | (1 << 5);
+
+    NVIC_ISER0 = (1UL << 27);
 }
 
-static void USART1_SendByte(uint8_t byte) {
-    while (!(USART1->ISR & (1 << 7)));  // Espera a que el TDR esté libre
-    USART1->TDR = byte;
+void USER_USART1_Send_8bit(uint8_t Data) {
+	while (!( USART1->ISR & (0x1UL << 7U)))
+		; // wait until next data can be written
+	USART1->TDR = Data; // Data to send
 }
 
 void USER_USART1_Transmit(uint8_t *pData, uint16_t size) {
-    for (uint16_t i = 0; i < size; ++i) {
-        USART1_SendByte(pData[i]);
-    }
+	for (int i = 0; i < size; i++) {
+		USER_USART1_Send_8bit(*pData++);
+	}
 }
 
 uint8_t USER_USART1_Receive_8bit(void) {
-    while (!(USART1->ISR & (1 << 5)));  // Espera dato en RDR
-    return (uint8_t)(USART1->RDR);
+	while (!( USART1->ISR & (1UL << 5U)))
+		; // Espera hasta que RXNE esté en 1 (dato recibido)
+	return (uint8_t) (USART1->RDR & 0xFF); // Lee el dato recibido
+}
+
+void USART1_IRQHandler(void) {
+    if (USART1->ISR & USART_ISR_RXNE) {  // Dato recibido
+        char c = USART1->RDR & 0xFF;
+
+        if (c == '\n' || uart_rx_index >= UART_RX_BUFFER_SIZE - 1) {
+            uart_rx_buffer[uart_rx_index] = '\0';  // Finalizar string
+            parse_and_display((const char*)uart_rx_buffer);  // Procesar
+            uart_rx_index = 0;  // Reiniciar índice
+        } else {
+            uart_rx_buffer[uart_rx_index++] = c;
+        }
+    }
 }
 
 int _write(int file, char *ptr, int len) {
-    for (int i = 0; i < len; ++i) {
-        while (!(USART1->ISR & (1 << 7)));
-        USART1->TDR = ptr[i];
+	int DataIdx;
+	for (DataIdx = 0; DataIdx < len; DataIdx++) {
+		while (!( USART1->ISR & (0x1UL << 7U)))
+			;
+		USART1->TDR = *ptr++;
+	}
+	return len;
+}
+
+void parse_and_display(const char *line) {
+    int spd_entero = 0, rpm_entero = 0, gear_entero = 0;
+
+    if (sscanf(line, "SPD:%d RPM:%d G:%d", &spd_entero, &rpm_entero, &gear_entero) == 3) {
+        vl = spd_entero / 10;
+        rpm = rpm_entero;
+        gear = gear_entero;
+        paqueteListo = 1;
     }
-    return len;
 }
