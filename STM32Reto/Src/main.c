@@ -27,7 +27,6 @@ int main(void)
 {
 	//Local variables
 	uint32_t start_tx = 0;
-	uint32_t start_led = 0;
 
 	/* Initialization of Peripherals */
 	USER_RCC_Init(); 				// Set CLK to 48MHz
@@ -108,3 +107,4 @@ void Update_Inputs(void) {
     acceleration = USER_ADC_Read();
     button_state = (GPIOA->IDR & (1UL << 3U)) ? 1 : 0;
 }
+
