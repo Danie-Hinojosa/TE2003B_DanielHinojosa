@@ -9,7 +9,7 @@
 
 (STM) (Proto)        
 - PA0 -> Potenciometro 
-- PA3 -> Boton         
+- PA1 -> Boton         
 
 (STM) (Proto)          
 - PB4 -> LED 1 (Motor 1) 
