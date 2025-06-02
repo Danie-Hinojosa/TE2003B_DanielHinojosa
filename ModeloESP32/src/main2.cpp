@@ -39,11 +39,23 @@ void loop() {
 
         if (btnVal == 1) {
           frenando = true;
-          velocidad -= 1000.0f;
-          if (velocidad < 0.0f) velocidad = 0.0f;
+
+          // Reducción progresiva de velocidad (5 km/h por paso)
+          if (velocidad > 0.0f) {
+            velocidad -= 10000.0f;
+            if (velocidad < 0.0f) velocidad = 0.0f;
+          }
+
         } else {
           frenando = false;
-          velocidad = throttle;
+
+          // Aumenta la velocidad solo si el throttle lo permite
+          if (velocidad < throttle) {
+            velocidad += 2.0f;  // Aceleración progresiva
+            if (velocidad > throttle) velocidad = throttle;
+          } else {
+            velocidad = throttle;  // Evita quedarse arriba si throttle baja
+          }
         }
 
         EngTrModel_U.Throttle = velocidad;
