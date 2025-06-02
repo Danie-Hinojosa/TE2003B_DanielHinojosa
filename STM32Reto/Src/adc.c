@@ -24,7 +24,8 @@ void USER_ADC_Init(void) {
     ADC1->CFGR1 &= ~(0x3 << 3);  // 12-bit resolution
 
     // Tiempo de muestreo
-    ADC1->SMPR |= ~(0x7 << 0);   // Sampling time = shortest
+    ADC1->SMPR &= ~(0x7 << 0);  // Limpia los bits
+    ADC1->SMPR |=  (0x4 << 0);  // Sampling time medio (~7.5 ADC cycles)
 
     ADC1->ISR &= ~( 0x1UL << 13U );
     ADC1->CFGR1 &= ~( 0x1UL << 21U ) & ~( 0x1UL << 2U );
@@ -37,14 +38,14 @@ void USER_ADC_Init(void) {
     // Habilitar regulador interno
 
     ADC1->CR |= (1 << 28);       // ADVREGEN
-    SysTick_Delay(2);            // Delay > 10 us
+    USER_TIM14_Delay(1);            // Delay > 1 ms
 
     // Calibración
     while (!USER_ADC_Calibration());
 
     // Habilitar ADC
     ADC1->CR |= (1 << 0);         // ADEN
-    for (uint32_t i = 0; i < 1000 && !(ADC1->ISR & (1 << 0)); i++) SysTick_Delay(1); // Wait up to 1ms
+    for (uint32_t i = 0; i < 10 && !(ADC1->ISR & (1 << 0)); i++) USER_TIM14_Delay(1); // Wait up to 1ms
     if (!(ADC1->ISR & (1 << 0))) return;  // Fail if ADRDY not set
 }
 
@@ -64,3 +65,4 @@ uint16_t USER_ADC_Read(void) {
     while (!(ADC1->ISR & (1 << 2)));  // Esperar EOC
     return (uint16_t)(ADC1->DR);
 }
+
