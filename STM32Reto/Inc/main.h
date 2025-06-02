@@ -136,9 +136,11 @@ typedef struct{
 #define GPIOA_BASE	0x50000000UL//		GPIO Port A base address
 #define GPIOB_BASE	0x50000400UL//		GPIO Port B base address
 #define USART1_BASE 0x40013800UL
+#define USART2_BASE 0x40004400UL
 #define TIM3_BASE	0x40000400UL//	    TIM3 base address
 #define TIM14_BASE  0x40002000UL//      TIM14 base address
 #define TIM16_BASE	0x40014400UL// 	    TIM16 base address
+#define TIM17_BASE  0x40014800UL//      TIM17 base address
 
 #define ADC1    (( ADC_TypeDef *)ADC1_BASE )
 #define RCC     (( RCC_TypeDef *)RCC_BASE )
@@ -146,9 +148,12 @@ typedef struct{
 #define GPIOA	(( GPIO_TypeDef *)GPIOA_BASE )
 #define GPIOB   (( GPIO_TypeDef *)GPIOB_BASE )
 #define USART1  (( USART_TypeDef *)USART1_BASE )
+#define USART2  (( USART_TypeDef *)USART2_BASE )
 #define TIM3    (( TIM_TypeDef * )TIM3_BASE )
 #define TIM14   (( TIM_TypeDef *) TIM14_BASE )
 #define TIM16   (( TIM_TypeDef * )TIM16_BASE )
+#define TIM17   (( TIM_TypeDef * )TIM17_BASE )
+
 
 
 extern int rpm;
