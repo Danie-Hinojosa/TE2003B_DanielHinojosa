@@ -4,7 +4,7 @@
 #define RX_BUFFER_SIZE 64
 #define UART_RX_BUFFER_SIZE 64
 
-static void USART1_SendByte(uint8_t byte);
+void USART1_SendByte(uint8_t byte);
 volatile char uart_rx_buffer[UART_RX_BUFFER_SIZE];
 volatile uint8_t uart_rx_index = 0;
 
@@ -85,4 +85,28 @@ void parse_and_display(const char *line) {
         gear = gear_entero;
         paqueteListo = 1;
     }
+}
+
+void USER_UART2_Init( void ){
+  RCC->IOPENR   |=  ( 0x1UL <<  0U ); // GPIOA clock enabled
+  RCC->APBENR1  |=  ( 0x1UL << 17U ); // USART2 clock enabled
+  GPIOA->AFRL   &= ~( 0xEUL <<  8U );
+  GPIOA->AFRL   |=  ( 0x1UL <<  8U ); // Select the AF1 for the PA2
+  GPIOA->PUPDR  &= ~( 0x3UL <<  4U ); // Clear pull-up/pull-down bits for PA2
+  GPIOA->OTYPER &= ~( 0x1UL <<  2U ); // Clear output type bit for PA2
+  GPIOA->MODER  &= ~( 0x1UL <<  4U );
+  GPIOA->MODER  |=  ( 0x2UL <<  4U ); // Set PA2 as AF
+  GPIOA->AFRL   &= ~( 0xEUL << 12U );
+  GPIOA->AFRL   |=  ( 0x1UL << 12U ); // Select the AF1 for the PA3
+  GPIOA->PUPDR  &= ~( 0x3UL <<  6U ); // Clear pull-up/pull-down bits for PA3
+  GPIOA->OTYPER &= ~( 0x1UL <<  3U ); // Clear output type bit for PA3
+  GPIOA->MODER  &= ~( 0x1UL <<  6U );
+  GPIOA->MODER  |=  ( 0x2UL <<  6U ); // Set PA3 as AF
+  USART2->CR1   &= ~( 0x1UL << 28U ); // 8-bit word length
+  USART2->CR1   &= ~( 0x1UL << 12U ); // 8-bit word length
+  USART2->BRR   =   ( 48000000 / 115200 ); // Desired baud rate
+  USART2->CR2   &= ~( 0x3UL << 12U ); // 1 stop bit
+  USART2->CR1   |=  ( 0x1UL <<  0U ); // USART is enabled
+  USART2->CR1   |=  ( 0x1UL <<  3U ); // Transmitter is enabled
+  USART2->CR1   |=  ( 0x1UL <<  2U ); // Receiver is enabled
 }
