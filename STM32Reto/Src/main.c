@@ -6,7 +6,6 @@
 #include "adc.h"
 #include "lcd.h"
 #include "user_uart.h"
-#include "user_core.h"
 #include "user_tim.h"
 
 /*====================[ Function Prototypes ]====================*/
@@ -67,7 +66,6 @@ int main(void)
 		/* Synchronization to maintain consistent cycle duration */
 		while ((tim16_tick - cycle_start) < CYCLE_TIME);
 	}
-
 }
 
 /*====================[ Hardware Init Functions ]==z==================*/
