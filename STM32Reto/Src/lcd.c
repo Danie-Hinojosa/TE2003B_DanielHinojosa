@@ -77,7 +77,7 @@ void LCD_Init(void){
 	GPIOB->BSRR	 =	 LCD_D6_PIN_LOW;
 	GPIOB->BSRR	 =	 LCD_D7_PIN_LOW;
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!	wait > 40ms
-	delay_ms(50);
+	USER_TIM14_Delay(50);
 
 	/* Special case of 'Function Set'	*/
 	GPIOB->BSRR	 =	 LCD_D4_PIN_HIGH;
@@ -86,7 +86,7 @@ void LCD_Init(void){
 	GPIOB->BSRR	 =	 LCD_D7_PIN_LOW;
 	LCD_Pulse_EN( );
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!	wait > 4.1ms
-	delay_ms(5);
+	USER_TIM14_Delay(5);
 
 	/* Special case of 'Function Set' */
 	GPIOB->BSRR	 =	 LCD_D4_PIN_HIGH;
@@ -95,7 +95,7 @@ void LCD_Init(void){
 	GPIOB->BSRR	 =	 LCD_D7_PIN_LOW;
 	LCD_Pulse_EN( );
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!	wait > 53us
-	delay_us(60);
+	USER_TIM14_Delay_us(53);
 
 	/* Special case of 'Function Set' */
 	GPIOB->BSRR	 =	 LCD_D4_PIN_HIGH;
@@ -227,7 +227,7 @@ char LCD_Busy(void){
 	GPIOB->BSRR	  =	 LCD_RW_PIN_HIGH;
 	GPIOB->BSRR	  =	 LCD_EN_PIN_HIGH;
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! wait for 100us
-	delay_us(100);
+	USER_TIM14_Delay_us(100);
 	if(( GPIOB->IDR	& LCD_D7_PIN_HIGH )) {
 		 GPIOB->BSRR	=  LCD_EN_PIN_LOW;
 		 GPIOB->BSRR	=  LCD_RW_PIN_LOW;
@@ -257,15 +257,15 @@ char LCD_Busy(void){
 void LCD_Pulse_EN(void){
 	GPIOB->BSRR	=	LCD_EN_PIN_LOW;//
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! wait for	10us
-	delay_us(10);
+	USER_TIM14_Delay_us(100);
 
 	GPIOB->BSRR	=	LCD_EN_PIN_HIGH;
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! wait for	10us
-	delay_us(10);
+	USER_TIM14_Delay_us(100);
 
 	GPIOB->BSRR	=	LCD_EN_PIN_LOW;
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! wait for	1ms
-	delay_ms(1);
+	USER_TIM14_Delay(3);
 }
 
 /*
