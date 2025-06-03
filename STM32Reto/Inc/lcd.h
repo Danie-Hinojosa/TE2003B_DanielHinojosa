@@ -1,7 +1,7 @@
 #ifndef INC_LCD_H_
 #define INC_LCD_H_
 
-#include "user_core.h"
+#include "user_tim.h"
 
 //Lista de definicion de pines
 #define LCD_RS_PIN_HIGH       ( 0x1UL <<  9U )//	Set pin RS_LCD (PB9)
