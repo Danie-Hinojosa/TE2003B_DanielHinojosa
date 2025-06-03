@@ -128,6 +128,22 @@ void USER_TIM14_Delay(uint16_t ms) {
 	TIM14->SR &= ~(1UL << 0);
 }
 
+void USER_TIM14_Delay_us(uint16_t us) {
+    TIM14->CR1 &= ~(1UL << 0);           // Deshabilita el timer
+
+    TIM14->PSC = 47;                     // Prescaler: (48 MHz / (47+1)) = 1 MHz → 1 tick = 1 µs
+    TIM14->ARR = us;                     // Número de microsegundos a esperar
+
+    TIM14->EGR |= (1UL << 0);            // Generar evento de actualización
+    TIM14->SR &= ~(1UL << 0);            // Limpia bandera de actualización
+    TIM14->CR1 |= (1UL << 0);            // Habilita el timer
+
+    while (!(TIM14->SR & (1UL << 0)));   // Espera a que llegue el overflow
+
+    TIM14->CR1 &= ~(1UL << 0);           // Deshabilita el timer
+    TIM14->SR &= ~(1UL << 0);            // Limpia bandera nuevamente
+}
+
 void USER_TIM16_Init(void) {
     // 1. Habilitar el reloj de TIM16 (APBENR2 bit 17)
     RCC->APBENR2 |= (0x1UL << 17U);
@@ -156,8 +172,6 @@ void USER_TIM16_Init(void) {
 	// 7. Arrancar el timer
 	TIM16->CR1 |= (1UL << 0);
 }
-
-
 
 void USER_TIM17_Init_Timer(void) {
     RCC->APBENR2 |= (1UL << 18U);   // Enable TIM17 clock
@@ -221,4 +235,3 @@ void Update_PWM_From_Velocity(int velocity_percent) {
     TIM3->CCR3 = duty;
     TIM3->CCR4 = duty;
 }
-
