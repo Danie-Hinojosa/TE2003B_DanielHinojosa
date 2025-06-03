@@ -1,6 +1,6 @@
 #include "main.h"
 #include "adc.h"
-#include "user_core.h"
+#include "user_tim.h"
 
 void USER_ADC_Init(void) {
     // Habilitar reloj del ADC y del puerto GPIOA
@@ -65,4 +65,3 @@ uint16_t USER_ADC_Read(void) {
     while (!(ADC1->ISR & (1 << 2)));  // Esperar EOC
     return (uint16_t)(ADC1->DR);
 }
-
