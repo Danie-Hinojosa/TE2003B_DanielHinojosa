@@ -14,8 +14,8 @@
 (STM) (Proto)          
 - PB4 -> LED 1 (Motor 1) 
 - PB5 -> LED 2 (Motor 2) 
-- PB6 -> LED 3 (Motor 3) 
-- PB7 -> LED 4 (Motor 4) 
+- PB0 -> LED 3 (Motor 3) 
+- PB1 -> LED 4 (Motor 4) 
 
 (STM) (ESP32)
 - PA9 -> D16(RX2) 
