@@ -101,19 +101,24 @@ void USER_GPIO_Init(void) {
 /*====================[ Task Functions ]====================*/
 void Task_Input(void) {
     acceleration = USER_ADC_Read();
-    button_state = (GPIOA->IDR & (1UL << 1U)) ? 1 : 0;  // PA1
+    button_state = (GPIOA->IDR & (1UL << 1U)) ? 0 : 1;  // PA1
 }
 
 void Task_Control(void) {
-    // Example logic — customize as needed
-    vl = acceleration / 10;
-    rpm = vl * 50;
-    gear = (vl / 20) + 1;
+    if (!paqueteListo) {
+        // Solo si no llegó dato de ESP32, actualiza desde el potenciómetro
+        vl = acceleration / 10;
+        rpm = vl * 50;
+        gear = (vl / 20) + 1;
+    }
 }
+
 
 void Task_PWM_Update(void) {
     Update_PWM_From_Velocity(vl);
+    paqueteListo = 0;  // Ya usamos el valor que vino de la ESP32
 }
+
 
 void Task_Display(void) {
     LCD_Clear();
