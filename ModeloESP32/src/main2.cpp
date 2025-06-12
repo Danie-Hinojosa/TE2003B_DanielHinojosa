@@ -30,12 +30,13 @@ void loop() {
 
         int sep = inputData.indexOf("BTN:");
         if (sep > 0) {
-          adcVal = inputData.substring(4, sep).toInt(); // desde ADC:
-          btnVal = inputData.substring(sep + 4).toInt(); // desde BTN:
+          adcVal = inputData.substring(4, sep).toInt();
+          btnVal = inputData.substring(sep + 4).toInt();
         }
 
-        float throttle = adcVal / 4095.0f * 100.0f;  // Ajusta si el ADC no es de 12 bits
-        float brake = (btnVal == 1) ? 100.0f : 0.0f;
+        float throttle = adcVal / 4095.0f * 100.0f;
+        // Frenado proporcional basado en la velocidad actual
+        float brake = (btnVal == 1) ? constrain(EngTrModel_Y.VehicleSpeed * 500.0f, 500.0f, 10000.0f) : 0.0f;
 
         if (btnVal == 1) {
           frenando = true;
@@ -49,12 +50,11 @@ void loop() {
         } else {
           frenando = false;
 
-          // Aumenta la velocidad solo si el throttle lo permite
           if (velocidad < throttle) {
-            velocidad += 2.0f;  // Aceleración progresiva
+            velocidad += 2.0f;
             if (velocidad > throttle) velocidad = throttle;
           } else {
-            velocidad = throttle;  // Evita quedarse arriba si throttle baja
+            velocidad = throttle;
           }
         }
 
