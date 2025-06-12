@@ -1,5 +1,6 @@
 import dash
 from dash import html, dcc, Input, Output
+import dash_daq as daq
 import plotly.graph_objs as go
 import paho.mqtt.client as mqtt
 import json
@@ -9,11 +10,14 @@ from datetime import datetime
 # === MQTT Setup ===
 broker_address = "localhost"
 topic_sub = "tractor/data"
+topic_pub = "tractor/control"
 
 rpm_data = []
 vel_lineal_data = []
 gear_data = []
 timestamps = []
+
+modo_manual = False
 
 # MQTT callbacks
 def on_connect(client, userdata, flags, rc):
@@ -52,14 +56,69 @@ mqtt_thread.start()
 
 # === Dash App ===
 app = dash.Dash(__name__)
+app.title = "Tractor Dashboard"
 
 app.layout = html.Div([
     html.H1("Dashboard del Tractor"),
+    
+    daq.ToggleSwitch(
+        id='modo-switch',
+        label=['Automático', 'Manual'],
+        value=False
+    ),
+
+    html.Div([
+        html.Label('Acelerador'),
+        daq.BooleanSwitch(
+            id='btn-acelerador',
+            on=False,
+            label="Encendido",
+            labelPosition="top"
+        
+        ),
+        html.Br(),
+        
+        html.Label('Freno'),
+        daq.BooleanSwitch(
+            id='btn-freno',
+            on=False,
+            label="Presionado",
+            labelPosition="top"
+        )
+    ], id='manual-controls', style={'display': 'none'}),
+    
     dcc.Graph(id='rpm-graph'),
     dcc.Graph(id='vel-graph'),
     dcc.Graph(id='gear-graph'),
-    dcc.Interval(id='interval-component', interval=1000, n_intervals=0)
+    
+    dcc.Interval(id='interval-component', interval=1000, n_intervals=0),
+    
+    html.Div(id='dummy-output', style={'display': 'none'})
 ])
+
+@app.callback(
+    Output('manual-controls', 'style'),
+    Input('modo-switch', 'value')
+)
+def toggle_manual_controls(mode):
+    return {'display': 'block'} if mode else {'display': 'none'}
+
+@app.callback(
+    Output('dummy-output', 'children'),
+    Input('btn-acelerador', 'on'),
+    Input('btn-freno', 'on'),
+    Input('modo-switch', 'value'),
+    prevent_initial_call=True
+)
+
+def publish_control(acel_on, freno_on, modo):
+    if modo:
+        throttle = 100 if acel_on else 0
+        brake = 100 if freno_on else 0
+        
+        payload = json.dumps({"throttle": throttle, "brake": brake})
+        client.publish(topic_pub, payload)
+    return ""
 
 @app.callback(
     Output('rpm-graph', 'figure'),
