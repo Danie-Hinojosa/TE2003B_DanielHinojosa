@@ -39,7 +39,7 @@
 
 ### Iniciar Proyecto de la Raspi
 ''' Bash
-source ~/myenv/bin/activate
-cd Documents
-python3 RetoRaspi2.py
+- source ~/myenv/bin/activate
+- cd Documents
+- python3 RetoRaspi2.py
 '''
