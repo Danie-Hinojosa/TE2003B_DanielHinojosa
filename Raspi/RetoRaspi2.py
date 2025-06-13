@@ -5,6 +5,8 @@ import plotly.graph_objs as go
 import paho.mqtt.client as mqtt
 import json
 import threading
+import csv
+import os
 from datetime import datetime
 
 # === MQTT Setup ===
@@ -37,6 +39,16 @@ def on_message(client, userdata, msg):
             vel_lineal_data.append(vl)
             gear_data.append(gear)
             timestamps.append(now)
+
+            # Guardar en CSV
+            csv_file = "datos_tractor.csv"
+            file_exists = os.path.isfile(csv_file)
+
+            with open(csv_file, mode='a', newline='') as file:
+                writer = csv.writer(file)
+                if not file_exists:
+                    writer.writerow(["Hora", "RPM", "Velocidad", "Gear"])
+                writer.writerow([now, rpm, vl, gear])
 
     except Exception as e:
         print("Error al procesar el mensaje:", e)
