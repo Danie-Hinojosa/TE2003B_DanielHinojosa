@@ -1,3 +1,0 @@
-../Src/adc.c:7:6:USER_ADC_Init	5
-../Src/adc.c:53:9:USER_ADC_Calibration	3
-../Src/adc.c:64:10:USER_ADC_Read	3
