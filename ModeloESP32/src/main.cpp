@@ -4,8 +4,8 @@
 #include <ArduinoJson.h>
 #include "EngTrModel.h"
 
-#define RXD2 16  // Conecta al PA9 de la STM32 (TX)
-#define TXD2 17  // Conecta al PA10 de la STM32 (RX)
+#define RXD2 3   // RX0 - Conecta al PA9 de la STM32 (TX)
+#define TXD2 1   // TX0 - Conecta al PA10 de la STM32 (RX)
 
 // ==================== MQTT ====================
 const char* ssid = "OPPO Reno7";
